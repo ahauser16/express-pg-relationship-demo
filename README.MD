@@ -276,6 +276,9 @@ erDiagram
 ##### diagram:
 
 ```mermaid
+---
+title: Each Person HAS one Passport, and each Passport has one Person
+---
 erDiagram
     PERSON {
         string ssn PK "PRIMARY KEY"
@@ -311,6 +314,9 @@ erDiagram
 ##### diagram:
 
 ```mermaid
+---
+title: "Each author writes zero or more books, and a book has exactly one author"
+---
 erDiagram
     AUTHOR {
         int id PK "PRIMARY KEY"
@@ -341,12 +347,15 @@ erDiagram
         int id PK "PRIMARY KEY"
         string name "Name"
     }
-    STUDENT ||--|| SCHOOL : "Attends"
+    STUDENT ||--o{ SCHOOL : "Attends"
 ```
 
 ##### diagram:
 
 ```mermaid
+---
+title: "Each student attends exactly one school, and a school can have zero or more students."
+---
 erDiagram
     STUDENT {
         int id PK "PRIMARY KEY"
@@ -362,32 +371,36 @@ erDiagram
 
 #### Many-to-Many Relationship
 
-In a many-to-many relationship, rows in Table A can be linked to many rows in Table B, and vice versa. This is often represented through a junction table. In Mermaid syntax, this is represented as `o{--}o`.
+In a many-to-many relationship, rows in Table A can be linked to many rows in Table B, and vice versa. This is often represented through a junction table. In Mermaid syntax, this is represented as `o{--}o`.  Also, the diagram below can be summarized in the following statement: "An author can contribute to zero or more authorships, and an authorship involves exactly one author. A book can be included in zero or more authorships, and an authorship contains exactly one book. This setup allows for a many-to-many relationship between authors and books, mediated by the authorship entity."
 
 ##### `mermaid` syntax:
 
 ```
 erDiagram
-    STUDENT {
+    AUTHOR {
         int id PK "PRIMARY KEY"
         string name "Name"
     }
-    COURSE {
+    BOOK {
         int id PK "PRIMARY KEY"
         string title "Title"
     }
-    ENROLLMENT {
-        int studentId FK "FOREIGN KEY"
-        int courseId FK "FOREIGN KEY"
+    AUTHORSHIP {
+        int authorId FK "FOREIGN KEY"
+        int bookId FK "FOREIGN KEY"
     }
-    STUDENT o{--o} COURSE : "Enrolls"
-    STUDENT ||--o} ENROLLMENT : "Has"
-    COURSE ||--o} ENROLLMENT : "Offered"
+    AUTHOR ||--o{ AUTHORSHIP : "Contributes"
+    BOOK ||--o{ AUTHORSHIP : "Includes"
+    AUTHORSHIP }o--o{ AUTHOR : "Written by"
+    AUTHORSHIP }o--o{ BOOK : "Contains"
 ```
 
 ##### diagram:
 
 ```mermaid
+---
+title: "An author can contribute to zero or more authorships, and an authorship involves exactly one author. A book can be included in zero or more authorships, and an authorship contains exactly one book."
+---
 erDiagram
     AUTHOR {
         int id PK "PRIMARY KEY"
