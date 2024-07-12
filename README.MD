@@ -100,6 +100,8 @@ erDiagram
 
 ### explanation of `Mermaid` syntax used to generate diagram above
 
+[mermaid.js syntax guide](https://mermaid.js.org/syntax/entityRelationshipDiagram.html#relationship-syntax)
+
 #### full `mermaid` code:
 
 ```
@@ -186,6 +188,69 @@ So, for example, the syntax `users ||--o{ messages : "REFERENCES"` represents a 
 
 7. ##### `tags ||--o{ messages_tags : "REFERENCES"`
    Represents a **one-to-many** relationship from `tags` to `messages_tags`. A tag can be associated with zero or many messages through the `messages_tags` junction table.
+
+### Relationship Syntax Legend
+
+#### 1. **Zero or one**:
+
+- when the value is on the LEFT: `|o`
+- when the value is on the RIGHT: `o|`
+
+#### 2. **Exactly one**:
+
+- when the value is on the LEFT: `||`
+- when the value is on the RIGHT: `||`
+
+#### 3. **Zero or more (no upper limit)**:
+
+- when the value is on the LEFT: `}o`
+- when the value is on the RIGHT: `o{`
+
+#### 4. **One or more (no upper limit)**:
+
+- when the value is on the LEFT: `}|`
+- when the value is on the RIGHT: `|{`
+
+### Alias
+
+| Value (left) | Value (right) | Alias for    |
+| ------------ | ------------- | ------------ |
+| one or zero  | one or zero   | Zero or one  |
+| zero or one  | zero or one   | Zero or one  |
+| one or more  | one or more   | One or more  |
+| one or many  | one or many   | One or more  |
+| many(1)      | many(1)       | One or more  |
+| 1+           | 1+            | One or more  |
+| zero or more | zero or more  | Zero or more |
+| zero or many | zero or many  | Zero or more |
+| many(0)      | many(1)       | Zero or more |
+| 0+           | 0+            | Zero or more |
+| only one     | only one      | Exactly one  |
+| 1            | 1             | Exactly one  |
+
+### Identification
+
+Relationships may be classified as either identifying or non-identifying and these are rendered with either solid or dashed lines respectively. This is relevant when one of the entities in question can not have independent existence without the other. For example a firm that insures people to drive cars might need to store data on `NAMED-DRIVER`s. In modelling this we might start out by observing that a `CAR` can be driven by many `PERSON` instances, and a `PERSON` can drive many `CAR`s - both entities can exist without the other, so this is a non-identifying relationship that we might specify in Mermaid as: `PERSON }|..|{ CAR : "driver"`. Note the two dots in the middle of the relationship that will result in a dashed line being drawn between the two entities. But when this many-to-many relationship is resolved into two one-to-many relationships, we observe that a `NAMED-DRIVER` cannot exist without both a `PERSON` and a `CAR` - the relationships become identifying and would be specified using hyphens, which translate to a solid line:
+
+both entities can exist without the other, so this is a non-identifying relationship that we might specify in Mermaid as: 
+```
+PERSON }|..|{ CAR : "driver"
+```
+
+```mermaid
+erDiagram
+    CAR ||--o{ NAMED-DRIVER : allows
+    PERSON ||--o{ NAMED-DRIVER : is
+    PERSON }|..|{ CAR : "driver"
+```
+
+But when this many-to-many relationship is resolved into two one-to-many relationships, we observe that a `NAMED-DRIVER` cannot exist without both a `PERSON` and a `CAR` - the relationships become identifying and would be specified using hyphens, which translate to a solid line and so we can ommit `PERSON }|..|{ CAR : "driver"` from the diagram below.
+
+```mermaid
+erDiagram
+    CAR ||--o{ NAMED-DRIVER : allows
+    PERSON ||--o{ NAMED-DRIVER : is
+```
 
 ### More examples of `mermaid` syntax that defines each type of relationship
 
@@ -324,19 +389,20 @@ erDiagram
 
 ```mermaid
 erDiagram
-    STUDENT {
+    AUTHOR {
         int id PK "PRIMARY KEY"
         string name "Name"
     }
-    COURSE {
+    BOOK {
         int id PK "PRIMARY KEY"
         string title "Title"
     }
-    ENROLLMENT {
-        int studentId FK "FOREIGN KEY"
-        int courseId FK "FOREIGN KEY"
+    AUTHORSHIP {
+        int authorId FK "FOREIGN KEY"
+        int bookId FK "FOREIGN KEY"
     }
-    STUDENT o{--o} COURSE : "Enrolls"
-    STUDENT ||--o} ENROLLMENT : "Has"
-    COURSE ||--o} ENROLLMENT : "Offered"
+    AUTHOR ||--o{ AUTHORSHIP : "Contributes"
+    BOOK ||--o{ AUTHORSHIP : "Includes"
+    AUTHORSHIP }o--o{ AUTHOR : "Written by"
+    AUTHORSHIP }o--o{ BOOK : "Contains"
 ```
