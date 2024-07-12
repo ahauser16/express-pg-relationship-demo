@@ -7,17 +7,17 @@ const ExpressError = require("../expressError");
 
 
 /** Get message: {id, msg tags: [name, name]} */
-
+//This `get` route is designed to fetch and return a specific message's details along with any associated tags from a PostgreSQL database. The route is part of an Express application that interacts with a PostgreSQL database using the `pg` module, as configured in `db.js`.
 router.get("/:id", async function (req, res, next) {
   try {
     const result = await db.query(
-          `SELECT m.id, m.msg, t.tag
+      `SELECT m.id, m.msg, t.tag
              FROM messages AS m
                LEFT JOIN messages_tags AS mt 
                  ON m.id = mt.message_id
                LEFT JOIN tags AS t ON mt.tag_code = t.code
              WHERE m.id = $1;`,
-        [req.params.id]);
+      [req.params.id]);
 
     let { id, msg } = result.rows[0];
     let tags = result.rows.map(r => r.tag);
@@ -36,9 +36,9 @@ router.get("/:id", async function (req, res, next) {
 router.put("/:id", async function (req, res, next) {
   try {
     const result = await db.query(
-          `UPDATE messages SET msg=$1 WHERE id = $2
+      `UPDATE messages SET msg=$1 WHERE id = $2
            RETURNING id, user_id, msg`,
-        [req.body.msg, req.params.id]);
+      [req.body.msg, req.params.id]);
 
     return res.json(result.rows[0]);
   }
@@ -54,17 +54,17 @@ router.put("/:id", async function (req, res, next) {
 router.put("/v2/:id", async function (req, res, next) {
   try {
     const checkRes = await db.query(
-        `SELECT id FROM messages WHERE id = $1`,
-        [req.params.id]);
+      `SELECT id FROM messages WHERE id = $1`,
+      [req.params.id]);
 
     if (checkRes.rows.length === 0) {
       throw new ExpressError("No such message", 404);
     }
 
     const result = await db.query(
-          `UPDATE messages SET msg=$1 WHERE id = $2,
+      `UPDATE messages SET msg=$1 WHERE id = $2,
            RETURNING id, user_id, msg`,
-        [req.body.msg, req.params.id]);
+      [req.body.msg, req.params.id]);
 
     return res.json(result.rows[0]);
   }
@@ -80,9 +80,9 @@ router.put("/v2/:id", async function (req, res, next) {
 router.put("/v3/:id", async function (req, res, next) {
   try {
     const result = await db.query(
-          `UPDATE messages SET msg=$1 WHERE id = $2
+      `UPDATE messages SET msg=$1 WHERE id = $2
            RETURNING id, user_id, msg`,
-        [req.body.msg, req.params.id]);
+      [req.body.msg, req.params.id]);
 
     if (result.rows.length === 0) {
       throw new ExpressError("No such message!", 404);
