@@ -337,6 +337,6 @@ erDiagram
         int courseId FK "FOREIGN KEY"
     }
     STUDENT o{--o} COURSE : "Enrolls"
-    STUDENT ||--o{ ENROLLMENT : "Has"
-    COURSE ||--o{ ENROLLMENT : "Offered"
+    STUDENT ||--o} ENROLLMENT : "Has"
+    COURSE ||--o} ENROLLMENT : "Offered"
 ```
